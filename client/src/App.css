@@ -1,0 +1,22 @@
+/* App.css */
+.container {
+  padding: 20px;
+  background-color: #f4f4f4;
+  border-radius: 10px;
+  text-align: center;
+  color: #333;
+}
+
+.button {
+  padding: 10px 20px;
+  background-color: royalblue;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.button:hover {
+  background-color: #003fbd;
+}
