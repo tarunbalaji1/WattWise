@@ -1,0 +1,54 @@
+/* client/src/components/Sidebar.css */
+.sidebar__toggle {
+  position: fixed;
+  top: 1.35rem;          /* push it down a bit */
+  left: 0.75rem;        /* nudge it right slightly */
+  background: #00223e;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem; /* a bit more padding for touch */
+  font-size: 1rem;       /* enlarge the “☰” icon slightly */
+  border-radius: 0 4px 4px 0; /* curved corner on the right */
+  z-index: 1002;           /* stays above navbar */
+  cursor: pointer;
+}
+
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: -260px;
+  width: 260px;
+  height: 100%;
+  background: linear-gradient(135deg, #ffa17f 0%, #fdbb2d 100%);
+  padding: 3rem 1rem 1rem;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  transition: left 0.3s ease;
+  z-index: 1000;
+}
+.sidebar--open {
+  left: 0;
+}
+
+.sidebar__nav {
+  margin-top: 4rem;      /* pushes links down below the toggle */
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+  padding-left: 1rem;    /* a bit of gutter from the edge */
+}
+.sidebar__nav a {
+  font-size: 1.2rem;     /* slightly larger text */
+  font-weight: 600;
+  color: #00223e;
+}
+.sidebar__nav a:hover {
+  background: rgba(0,34,62,0.1);
+  color: #fff;
+}
+
+.sidebar__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 999;
+}

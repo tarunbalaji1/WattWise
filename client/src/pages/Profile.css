@@ -1,0 +1,88 @@
+/* client/src/pages/Profile.css */
+
+/* 1. Outer wrapper: orange behind sidebar & bottom edges */
+.profile-page {
+  display: flex;
+  min-height: 100vh;
+  background: #ffa17f;
+}
+
+/* 2. Main content column: white under Navbar */
+.profile-page__main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+}
+
+/* 3. Scrollable content area */
+.profile-page__content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2rem;
+}
+
+/* 4. Section container */
+.profile-page__section {
+  margin-bottom: 2rem;
+}
+
+/* 5. Shift “Your Details” (first section) to the right */
+.profile-page__content .profile-page__section:first-of-type {
+  padding-left: 2rem;
+}
+
+/* 6. Section titles */
+.section-title {
+  font-size: 1.5rem;
+  color: #00223e;
+  margin-bottom: 1rem;
+}
+
+/* 7. Center the “Your Energy Limits” title */
+.profile-page__content 
+  .profile-page__section:nth-of-type(2) 
+  .section-title {
+  text-align: center;
+}
+
+/* 8. User details list */
+.details-list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 2rem 0;
+  max-width: 600px;
+  margin-right: auto;  /* centers the list inside its padded container */
+}
+.details-list li {
+  font-size: 1rem;
+  margin-bottom: 0.75rem;
+  color: #333333;
+}
+
+/* 9. Limits cards container */
+.limits-cards {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center; /* center the cards under the heading */
+}
+
+/* 10. Individual limit card */
+.limit-card {
+  flex: 1;
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+}
+.limit-card h3 {
+  margin-bottom: 1rem;
+  color: #00223e;
+}
+.limit-card p {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #ffa17f;
+  margin: 0;
+}
