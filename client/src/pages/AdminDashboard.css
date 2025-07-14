@@ -1,0 +1,27 @@
+.admin-page {
+  display: flex;
+  min-height: 100vh;
+  background: #ffa17f; /* orange accent */
+}
+
+.admin-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  background: #ffffff;
+}
+
+/* Pinned header with gradient */
+.admin-header {
+  padding: 1rem 2rem;
+  background: linear-gradient(135deg, #ffa17f 0%, #fdbb2d 100%);
+  color: #00223e;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* Content area under header */
+.admin-content {
+  padding: 2rem;
+  flex: 1;
+}

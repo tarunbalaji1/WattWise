@@ -1,0 +1,57 @@
+/* Toggle button */
+.admin-sidebar__toggle {
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  background: #00223e;
+  color: #fff;
+  border: none;
+  padding: 0.5rem 0.75rem;
+  font-size: 1.5rem;
+  border-radius: 4px;
+  z-index: 1002;
+  cursor: pointer;
+}
+
+/* Sidebar panel */
+.admin-sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 240px;
+  height: 100%;
+  background: linear-gradient(135deg, #ffa17f 0%, #fdbb2d 100%);
+  padding: 4rem 1rem 1rem;
+  box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  transition: transform 0.3s ease;
+  z-index: 1001;
+}
+
+/* Slide out when closed */
+.admin-sidebar.closed {
+  transform: translateX(-100%);
+}
+
+/* Nav links */
+.admin-sidebar__nav {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+.admin-sidebar__nav a {
+  color: #00223e;
+  font-size: 1.1rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+.admin-sidebar__nav a:hover {
+  color: #ffffff;
+}
+
+/* Overlay to close sidebar */
+.admin-sidebar__overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.3);
+  z-index: 1000;
+}
