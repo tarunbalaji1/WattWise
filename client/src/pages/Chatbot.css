@@ -149,11 +149,13 @@ html, body {
 
 /* If you want the container itself to sit flush to white,
    also remove any extra border-radius or shadow on the wrapper */
+
+   /*
 .chatbot-container {
   /* remove radius/shadow of inner pane if present */
   /* border-radius: 0; */
   /* border: none; */
-}
+/*}
 
 /* (Optional) Keep the bubbles’ padding so text still has breathing room */
 .chatbot-message {
