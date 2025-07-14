@@ -1,16 +1,30 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import './Modal.css'; // shared styles
 
 export default function LoginModal({ onClose }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const navigate = useNavigate();                  
 
-  const handleSubmit = e => {
-    e.preventDefault();
-    // TODO: call your login API here
-    console.log('Logging in:', { email, password });
+ // in sendMessage login form
+const handleSubmit = async e => {
+  e.preventDefault();
+  const res = await fetch('http://localhost:5000/api/auth/login', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json' },
+    body: JSON.stringify({ email, password })
+  });
+  const data = await res.json();
+  if (res.ok) {
+    localStorage.setItem('token', data.token);
     onClose();
-  };
+    navigate('/dashboard');  // or however you redirect
+  } else {
+    alert(data.msg);
+  }
+};
+
 
   return (
     <div className="modal-overlay" onClick={onClose}>
