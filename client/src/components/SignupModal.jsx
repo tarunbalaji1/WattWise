@@ -1,9 +1,7 @@
-// client/src/components/SignupModal.jsx
 import React, { useState } from 'react';
 import './Modal.css';
 
 export default function SignupModal({ onClose }) {
-  // 1. Form state (no username, adds mobile)
   const [form, setForm] = useState({
     name:     '',
     email:    '',
@@ -18,17 +16,23 @@ export default function SignupModal({ onClose }) {
     setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  // 2. Submit handler: calls your signup API
   const handleSubmit = async e => {
     e.preventDefault();
+    // Normalize email
+    const payload = {
+      ...form,
+      email: form.email.trim().toLowerCase(),
+    };
+    console.log('▶️ Signing up:', payload);
 
     try {
-      const res = await fetch('http://localhost:5000/api/auth/signup', {
+      const res = await fetch('/api/auth/signup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify(payload),
       });
       const data = await res.json();
+      console.log('◀️ Signup response:', res.status, data);
 
       if (res.ok) {
         alert(data.msg || 'Signup successful!');
@@ -42,7 +46,6 @@ export default function SignupModal({ onClose }) {
     }
   };
 
-  // 3. Field definitions (key + capitalized label)
   const fields = [
     { key: 'name',     label: 'Name'     },
     { key: 'email',    label: 'Email'    },

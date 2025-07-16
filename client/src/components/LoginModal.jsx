@@ -1,35 +1,45 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Modal.css'; // shared styles
+import './Modal.css';
 
 export default function LoginModal({ onClose }) {
-  const [email, setEmail] = useState('');
+  const [email, setEmail]       = useState('');
   const [password, setPassword] = useState('');
-  const navigate = useNavigate();                  
+  const navigate = useNavigate();
 
- // in sendMessage login form
-const handleSubmit = async e => {
-  e.preventDefault();
-  const res = await fetch('http://localhost:5000/api/auth/login', {
-    method: 'POST',
-    headers: { 'Content-Type':'application/json' },
-    body: JSON.stringify({ email, password })
-  });
-  const data = await res.json();
-  if (res.ok) {
-    localStorage.setItem('token', data.token);
-    onClose();
-    navigate('/dashboard');  // or however you redirect
-  } else {
-    alert(data.msg);
-  }
-};
+  const handleSubmit = async e => {
+    e.preventDefault();
+    const payload = {
+      email: email.trim().toLowerCase(),
+      password,
+    };
+    console.log('▶️ Logging in:', payload);
 
+    try {
+      const res = await fetch('/api/auth/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      console.log('◀️ Login response:', res.status, data);
+
+      if (res.ok) {
+        localStorage.setItem('token', data.token);
+        onClose();
+        navigate('/dashboard');
+      } else {
+        alert(data.msg || 'Login failed.');
+      }
+    } catch (err) {
+      console.error('Login error:', err);
+      alert('Unexpected error. Please try again.');
+    }
+  };
 
   return (
     <div className="modal-overlay" onClick={onClose}>
       <div className="modal" onClick={e => e.stopPropagation()}>
-        {/* Left side: form */}
         <div className="modal__form">
           <h2>Log In</h2>
           <form onSubmit={handleSubmit}>
@@ -56,10 +66,12 @@ const handleSubmit = async e => {
             </button>
           </form>
         </div>
-        {/* Right side: orange info panel */}
         <div className="modal__side">
           <h3>Welcome Back!</h3>
-          <p>Enter your credentials to access your community dashboard and start saving energy.</p>
+          <p>
+            Enter your credentials to access your community dashboard
+            and start saving energy.
+          </p>
         </div>
       </div>
     </div>
