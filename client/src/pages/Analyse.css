@@ -78,4 +78,84 @@
 }
 
 
+/* Analyse.css */
+
+/* ... (existing styles) */
+
+/* New styles for Custom Range Section */
+.custom-range-section {
+  width: 100%;
+  max-width: 800px;
+  margin-top: 2rem; /* Spacing from the buttons above */
+  padding: 1.5rem;
+  background: #f0f0f0; /* Light background for the section */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.custom-range-title {
+  font-size: 1.5rem;
+  color: #00223e;
+  margin-bottom: 1.5rem;
+}
+
+.custom-range-inputs {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  justify-content: center;
+  align-items: center;
+  gap: 1rem; /* Space between inputs and labels */
+}
+
+.custom-range-inputs label {
+  font-weight: 600;
+  color: #333;
+}
+
+.custom-date-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.custom-date-input:focus {
+  border-color: #fdbb2d; /* Highlight on focus */
+}
+
+.custom-range-button {
+  /* Inherits from .analyse-button, just needs specific overrides */
+  padding: 0.75rem 1.5rem; /* Smaller padding for this button */
+  font-size: 1rem;
+  margin-left: 1rem; /* Space from the date inputs */
+}
+
+/* Responsive adjustments for date inputs */
+@media (max-width: 600px) {
+  .custom-range-inputs {
+    flex-direction: column; /* Stack elements vertically on small screens */
+    align-items: stretch;
+  }
+  .custom-range-inputs label,
+  .custom-date-input,
+  .custom-range-button {
+    width: 100%; /* Make them full width */
+    margin-left: 0; /* Remove margin if stacked */
+  }
+  .custom-range-inputs label {
+    text-align: left; /* Align labels to left when stacked */
+  }
+}
+
+/* Ensure chart containers adapt */
+@media (max-width: 900px) {
+  .analyse-charts {
+    grid-template-columns: 1fr; /* Stack charts vertically on smaller screens */
+  }
+}
+
+
 

@@ -63,35 +63,51 @@ router.get('/summary', verifyToken, async (req, res) => {
 // server/routes/dashboard.js
 router.get('/range', verifyToken, async (req, res) => {
   try {
-    const { days } = req.query; // '5' | '15' | '30' | 'month'
+    const { days, startDate, endDate } = req.query; // Now explicitly get startDate and endDate
 
     // 1) Find current resident
     const resident = await Resident.findOne({ email: req.user.email });
     if (!resident) return res.status(404).json({ msg: 'Resident not found' });
     const { towerNo, flatNo } = resident;
 
-    // 2) Compute our base “today” (UTC midnight)
+    // 2) Compute our base “today” (UTC midnight) for relative calculations
     const today = new Date();
     today.setUTCHours(0, 0, 0, 0);
 
     // 3) Determine the primary display range (start and end dates for the graph's X-axis)
-    let displayRangeStart, displayRangeEnd; // Renamed to clearly define the display range
+    let displayRangeStart, displayRangeEnd;
 
-    if (days === 'month') {
+    if (startDate && endDate) { // New: Handle custom date range first
+      displayRangeStart = new Date(startDate);
+      displayRangeEnd   = new Date(endDate);
+
+      // Validate dates
+      if (isNaN(displayRangeStart.getTime()) || isNaN(displayRangeEnd.getTime())) {
+        return res.status(400).json({ msg: 'Invalid start or end date.' });
+      }
+      if (displayRangeStart.getTime() > displayRangeEnd.getTime()) {
+        return res.status(400).json({ msg: 'Start date cannot be after end date.' });
+      }
+      // Set to UTC midnight for consistency
+      displayRangeStart.setUTCHours(0, 0, 0, 0);
+      displayRangeEnd.setUTCHours(0, 0, 0, 0);
+
+    } else if (days === 'month') {
       // Month view: display from 1st of this month to today
       displayRangeStart = new Date(today.getUTCFullYear(), today.getUTCMonth(), 1);
-      displayRangeEnd   = today; // Crucial: "till date" means including today
+      displayRangeEnd   = today; // "till date" means including today
     } else {
       // N‑day view: display from N days ago to today
       displayRangeEnd = today;
       const n = parseInt(days, 10) || 0;
+      if (n <= 0) return res.status(400).json({ msg: 'Invalid number of days for range.' }); // Basic validation
       displayRangeStart = new Date(today.getTime() - n * 86_400_000);
     }
 
-    // 4) Determine the data fetch range. We need one day before the displayRangeStart
+    // 4) Determine the data fetch range. We need one day *before* the displayRangeStart
     //    to correctly calculate the daily consumption for the very first displayed day.
     const dataFetchStart = new Date(displayRangeStart);
-    dataFetchStart.setUTCDate(dataFetchStart.getUTCDate() - 1); // This will be June 30th for July 1st start
+    dataFetchStart.setUTCDate(dataFetchStart.getUTCDate() - 1); // This gets the day before
 
     const dataFetchEnd = displayRangeEnd; // Fetch up to the last display day
 
@@ -103,7 +119,7 @@ router.get('/range', verifyToken, async (req, res) => {
     // 6) Group them by flatKey and sort by date
     const byFlat = {};
     docs.forEach(d => {
-      const key = `${d.towerNo}|${d.flatNo}`; // Corrected template literal
+      const key = `${d.towerNo}|${d.flatNo}`;
       byFlat[key] = byFlat[key] || [];
       byFlat[key].push(d);
     });
@@ -113,21 +129,19 @@ router.get('/range', verifyToken, async (req, res) => {
     function getLatestCumul(docsArr, targetDate) {
       let last = 0;
       for (const rec of docsArr) {
-        if (rec.date.getTime() <= targetDate.getTime()) { // Use .getTime() for robust comparison
+        if (rec.date.getTime() <= targetDate.getTime()) {
           last = rec.consumption_kwh;
         } else {
-          break; // Optimization: stop if we've passed the targetDate
+          break;
         }
       }
       return last;
     }
 
-    // 8) Build day‑by‑day usage array
-    const rawResult = []; // Building a temporary raw result first
-    const userKey = `${towerNo}|${flatNo}`; // Corrected template literal
+    // 8) Build day‑by‑day usage array (rawResult) for the entire dataFetch range
+    const rawResult = [];
+    const userKey = `${towerNo}|${flatNo}`;
 
-    // Loop through ALL days from dataFetchStart to dataFetchEnd
-    // This includes the "day before" the display starts for calculation purposes
     for (let day = new Date(dataFetchStart); day <= dataFetchEnd; day.setUTCDate(day.getUTCDate()+1)) {
       const prev = new Date(day);
       prev.setUTCDate(prev.getUTCDate() - 1);
@@ -137,7 +151,7 @@ router.get('/range', verifyToken, async (req, res) => {
       const todayUserC = getLatestCumul(userDocs, day);
       const prevUserC  = getLatestCumul(userDocs, prev);
       let userKwh      = +(todayUserC - prevUserC).toFixed(2);
-      userKwh = Math.max(0, userKwh); // Ensure non-negative daily consumption
+      userKwh = Math.max(0, userKwh); // Ensure non-negative
 
       // — community average usage
       let sum = 0, count = 0;
@@ -161,10 +175,9 @@ router.get('/range', verifyToken, async (req, res) => {
 
     // 9) Filter the rawResult to ensure only dates within the actual display range are returned
     const finalResult = rawResult.filter(item => {
-        const itemDate = new Date(item.date + 'T00:00:00Z'); // Parse as UTC date
+        const itemDate = new Date(item.date + 'T00:00:00Z'); // Parse as UTC date for accurate comparison
         return itemDate.getTime() >= displayRangeStart.getTime() && itemDate.getTime() <= displayRangeEnd.getTime();
     });
-
 
     // 10) Return
     return res.json(finalResult);

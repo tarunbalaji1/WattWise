@@ -17,21 +17,41 @@ Chart.register(
 );
 
 export default function Analyse() {
-  const [rows, setRows]           = useState([]);     // data: [{date,user,community},…]
-  const [windowSize, setWindowSize] = useState(null);
+  const [rows, setRows] = useState([]);
+  const [windowSize, setWindowSize] = useState(null); // Keep this for existing chart titles
+  const [startDate, setStartDate] = useState('');
+  const [endDate, setEndDate] = useState('');
   const token = localStorage.getItem('token');
 
   const options = [
-    { label: 'Check Last 5 Days',   days: 5  },
-    { label: 'Check Last 15 Days',  days: 15 },
-    { label: 'Check Last 30 Days',  days: 30 },
-    { label: 'This Month’s Usage',   days: 'month' },
+    { label: 'Check Last 5 Days', days: 5 },
+    { label: 'Check Last 15 Days', days: 15 },
+    { label: 'Check Last 30 Days', days: 30 },
+    { label: 'This Month’s Usage', days: 'month' },
+    // Removed 'custom' from here, as it will have its own dedicated input fields
   ];
 
-  async function loadData(days) {
-    setWindowSize(days);
+  async function loadData(days, customStartDate = null, customEndDate = null) {
+    setWindowSize(days); // This will track '5', '15', '30', 'month' or 'custom' for display
+    let apiUrl;
+
+    if (days === 'custom') {
+      if (!customStartDate || !customEndDate) {
+        alert('Please select both start and end dates for a custom range.');
+        return;
+      }
+      // Ensure start date is not after end date
+      if (new Date(customStartDate) > new Date(customEndDate)) {
+        alert('Start date cannot be after end date.');
+        return;
+      }
+      apiUrl = `/api/dashboard/range?startDate=${customStartDate}&endDate=${customEndDate}`;
+    } else {
+      apiUrl = `/api/dashboard/range?days=${days}`;
+    }
+
     try {
-      const res = await fetch(`/api/dashboard/range?days=${days}`, {
+      const res = await fetch(apiUrl, {
         headers: { Authorization: `Bearer ${token}` }
       });
       if (!res.ok) throw new Error(await res.text());
@@ -43,20 +63,27 @@ export default function Analyse() {
     }
   }
 
+  // Handle custom range button click
+  const handleCustomRangeLoad = () => {
+    loadData('custom', startDate, endDate); // Pass 'custom' and selected dates
+  };
+
   // Prepare chart datasets
-  const labels   = rows.map(r => r.date);
+  const labels = rows.map(r => r.date);
   const userData = rows.map(r => r.user);
   const commData = rows.map(r => r.community);
 
-  // Chart configs
+  // Chart configs (update title logic to handle 'custom')
   const commonOpts = {
     responsive: true,
     plugins: {
       title: {
         display: true,
-        text: windowSize > 0
-          ? `Last ${windowSize} Days`
-          : 'Month to Date',
+        text: windowSize === 'custom'
+          ? `Custom Range (${startDate} to ${endDate})`
+          : windowSize > 0
+            ? `Last ${windowSize} Days`
+            : 'Month to Date',
         font: { size: 18 }
       },
       legend: { position: 'bottom' },
@@ -86,7 +113,7 @@ export default function Analyse() {
       data: commData,
       borderColor: '#fdbb2d',
       backgroundColor: '#fdbb2d',
-      borderDash: [5,5],
+      borderDash: [5, 5],
       tension: 0.3,
       pointRadius: 4
     }
@@ -111,13 +138,41 @@ export default function Analyse() {
             ))}
           </div>
 
+          <div className="custom-range-section">
+            <h3 className="custom-range-title">Select Custom Dates:</h3>
+            <div className="custom-range-inputs">
+              <label htmlFor="startDate">From:</label>
+              <input
+                type="date"
+                id="startDate"
+                value={startDate}
+                onChange={(e) => setStartDate(e.target.value)}
+                className="custom-date-input"
+              />
+              <label htmlFor="endDate">To:</label>
+              <input
+                type="date"
+                id="endDate"
+                value={endDate}
+                onChange={(e) => setEndDate(e.target.value)}
+                className="custom-date-input"
+              />
+              <button
+                className="analyse-button custom-range-button"
+                onClick={handleCustomRangeLoad}
+              >
+                Load Custom Range
+              </button>
+            </div>
+          </div>
+
           {rows.length === 0 ? (
             <p style={{ marginTop: '2rem', color: '#555' }}>
-              Select a window above to view your usage…
+              Select a window above or a custom range to view your usage…
             </p>
           ) : (
             <div className="analyse-charts">
-              {/* User‑only chart */}
+              {/* User-only chart */}
               <div className="analyse-chart">
                 <Line
                   data={{ labels, datasets: [datasetYou] }}
@@ -138,3 +193,4 @@ export default function Analyse() {
     </div>
   );
 }
+
