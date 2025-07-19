@@ -1,0 +1,63 @@
+/* Import all styles from the original Analyse.css */
+@import './Analyse.css';
+
+/* Additional styles specific to AdminAnalyse.jsx */
+
+.analyse-subtitle {
+  font-size: 1.6rem; /* Slightly smaller than main title */
+  color: #00223e;
+  margin-top: 2rem;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  width: 100%;
+}
+
+.resident-input-section {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem; /* Space below this section */
+  padding: 1.5rem;
+  background: #e9e9e9; /* Slightly different background */
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  width: 100%;
+  max-width: 800px;
+}
+
+.resident-input-section label {
+  font-weight: 600;
+  color: #333;
+}
+
+.resident-input {
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  outline: none;
+  transition: border-color 0.2s ease;
+  width: 120px; /* Fixed width for inputs */
+}
+
+.resident-input:focus {
+  border-color: #fdbb2d;
+}
+
+/* Responsive adjustments for resident inputs */
+@media (max-width: 600px) {
+  .resident-input-section {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .resident-input-section label,
+  .resident-input {
+    width: 100%;
+    margin: 0; /* Remove specific margins if stacked */
+  }
+  .resident-input-section label {
+    text-align: left;
+  }
+}
