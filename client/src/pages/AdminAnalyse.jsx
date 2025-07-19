@@ -6,8 +6,9 @@ import {
   Title, Tooltip, Legend
 } from 'chart.js';
 import AdminSidebar from '../components/AdminSidebar'; // Use AdminSidebar
-// import Navbar from '../components/Navbar'; // No need for Navbar here, AdminDashboard handles header
+import Navbar from '../components/Navbar'; // No need for Navbar here, AdminDashboard handles header
 import './AdminAnalyse.css'; // Use the new CSS file
+
 
 Chart.register(
   LineElement, PointElement,
@@ -129,7 +130,7 @@ export default function AdminAnalyse() {
     <div className="analyse-page">
       <AdminSidebar /> {/* Use AdminSidebar */}
       <div className="analyse-page__main">
-        {/* <Navbar /> -- Removed Navbar */}
+         <Navbar />
         <div className="analyse-page__content">
           <h2 className="analyse-title">Analyse Resident Usage</h2>
 

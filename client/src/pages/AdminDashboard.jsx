@@ -2,6 +2,7 @@ import React from 'react';
 import './AdminDashboard.css';
 import AdminSidebar from '../components/AdminSidebar';
 import '../components/AdminSidebar.css';
+import Navbar from '../components/Navbar'; 
 
 
 export default function AdminDashboard() {
@@ -10,9 +11,12 @@ export default function AdminDashboard() {
       <AdminSidebar />
 
       <div className="admin-main">
-        <header className="admin-header">
-          <h1>Admin Console</h1>
-        </header>
+         
+        
+         
+        <Navbar />
+       
+         
 
         <div className="admin-content">
           <p>Welcome, <strong>Admin</strong>! Choose an action from the sidebar.</p>
