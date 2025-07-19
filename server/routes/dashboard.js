@@ -3,6 +3,7 @@ const router           = require('express').Router();
 const verifyToken      = require('../middleware/verifyToken');
 const Resident         = require('../models/Resident');
 const DailyConsumption = require('../models/DailyConsumption');
+const Threshold = require('../models/Threshold');
 
 /**
  * GET /api/dashboard/summary
@@ -187,5 +188,82 @@ router.get('/range', verifyToken, async (req, res) => {
     return res.status(500).json({ msg: 'Server error' });
   }
 });
+
+/**
+ * GET /api/dashboard/profile
+ * Returns user details + current thresholds.
+ */
+router.get('/profile', verifyToken, async (req, res) => {
+  try {
+    // 1) fetch resident by email
+    const resident = await Resident.findOne({ email: req.user.email }).lean();
+    if (!resident) return res.status(404).json({ msg: 'Resident not found' });
+
+    // 2) fetch thresholds (may be null)
+    const thr = await Threshold.findOne({
+      towerNo: resident.towerNo,
+      flatNo:  resident.flatNo
+    }).lean();
+
+    // 3) assemble payload
+    return res.json({
+      name:             resident.name,
+      email:            resident.email,
+      tower:            resident.towerNo,
+      flat:             resident.flatNo,
+      mobile:           resident.mobile,
+      dailyLimit:       thr?.daily_threshold   ?? null,
+      monthlyLimit:     thr?.monthly_threshold ?? null
+    });
+  }
+  catch(err) {
+    console.error('[DASHBOARD] profile error:', err);
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
+
+/**
+ * POST /api/dashboard/thresholds
+ * Body: { daily: Number, monthly: Number }
+ * Creates or updates the threshold row for this resident.
+ */
+router.post('/thresholds', verifyToken, async (req, res) => {
+  try {
+    const { daily, monthly } = req.body;
+    if (daily == null || monthly == null) {
+      return res.status(400).json({ msg: 'daily & monthly values required' });
+    }
+
+    // find resident
+    const resident = await Resident.findOne({ email: req.user.email });
+    if (!resident) return res.status(404).json({ msg: 'Resident not found' });
+
+    // upsert threshold
+    const filter = {
+      towerNo: resident.towerNo,
+      flatNo:  resident.flatNo
+    };
+    const update = {
+      daily_threshold:   daily,
+      monthly_threshold: monthly
+    };
+    const opts = { upsert: true, new: true, setDefaultsOnInsert: true };
+
+    const thr = await Threshold
+      .findOneAndUpdate(filter, update, opts)
+      .lean();
+
+    return res.json({
+      msg: 'Threshold saved',
+      daily:   thr.daily_threshold,
+      monthly: thr.monthly_threshold
+    });
+  }
+  catch(err) {
+    console.error('[DASHBOARD] thresholds POST error:', err);
+    return res.status(500).json({ msg: 'Server error' });
+  }
+});
+
 
 module.exports = router;
