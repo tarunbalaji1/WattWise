@@ -61,6 +61,8 @@ import Analyse from './pages/Analyse';
 import Chatbot from './pages/Chatbot';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminAnalyse from './pages/AdminAnalyse'; // NEW: Import AdminAnalyse
+import ManageResidents from './pages/ManageResidents';
+import AdminHighConsumers from './pages/AdminHighConsumers';
 
 import './App.css';
 
@@ -155,6 +157,9 @@ export default function App() {
             </PrivateRoute>
           }
         />
+
+        <Route path="/admin/residents" element={<ManageResidents />} />
+        <Route path="/admin/high-consumers" element={<AdminHighConsumers />} />
 
         {/* TODO: add sub‑routes for analyse-datewise, predictions, admin features… */}
       </Routes>

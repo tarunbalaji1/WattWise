@@ -207,6 +207,7 @@ router.get('/profile', verifyToken, async (req, res) => {
 
     // 3) assemble payload
     return res.json({
+      _id:           resident._id, 
       name:             resident.name,
       email:            resident.email,
       tower:            resident.towerNo,

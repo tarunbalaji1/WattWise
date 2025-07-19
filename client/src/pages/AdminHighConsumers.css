@@ -1,0 +1,39 @@
+.high-consumers-page {
+  display: flex;
+  min-height: 100vh;
+  background: #ffa17f;
+}
+.high-consumers-main {
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  background:#fff;
+}
+.high-consumers-content {
+  padding:2rem;
+  flex:1;
+  overflow:auto;
+}
+.high-consumers-content h2 {
+  color:#00223e;
+  margin-bottom:1rem;
+}
+.sort-btn {
+  margin-bottom:1rem;
+  padding:0.5rem 1rem;
+  background:#00223e;
+  color:#fff;
+  border:none;
+  border-radius:4px;
+  cursor:pointer;
+}
+.high-consumers-table {
+  width:100%;
+  border-collapse:collapse;
+}
+.high-consumers-table th,
+.high-consumers-table td {
+  padding:0.75rem;
+  border:1px solid #ddd;
+  text-align:left;
+}

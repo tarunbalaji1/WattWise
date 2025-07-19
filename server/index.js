@@ -60,12 +60,15 @@ app.use(express.json());
 require('./models/Login');
 require('./models/Resident');
 require('./models/DailyConsumption');
+require('./models/Threshold'); 
 
 
 const authRoutesPath = path.join(__dirname, 'routes', 'auth.js');
 const authRoutes     = require(authRoutesPath);
 const dashRoutes     = require('./routes/dashboard');
 const adminDashRoutes = require('./routes/admindashboard'); // NEW: Import the admin dashboard routes
+const adminResRoutes = require('./routes/adminResidents');
+const adminHighCons     = require('./routes/adminHighConsumers');
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -79,6 +82,8 @@ mongoose
     app.use('/api/auth', authRoutes);
     app.use('/api/dashboard', dashRoutes);
     app.use('/api/admin', adminDashRoutes); // NEW: Use the admin dashboard routes
+    app.use('/api/admin/residents', adminResRoutes);
+    app.use('/api/admin/high-consumers', adminHighCons);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
