@@ -39,7 +39,8 @@ export default function App() {
         <Route path="/dashboard/chatbot"   element={<Chatbot />} />
 
         {/* Admin console */}
-        <Route path="/admin"               element={<AdminDashboard />} />
+        <Route path="/admin-dashboard"               element={<AdminDashboard />} />
+        <Route path="/admin/analyse" element={<PrivateRoute allowedRoles={['admin']}><AdminAnalyse /></PrivateRoute>}/>
 
         {/* TODO: add sub‑routes for analyse-datewise, predictions, admin features… */}
       </Routes>
