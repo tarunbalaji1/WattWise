@@ -23,8 +23,8 @@ export default function AdminSidebar() {
       <aside className={`admin-sidebar ${open ? 'open' : 'closed'}`}>
         <nav className="admin-sidebar__nav">
           {/* FIX 2: Add onClick handler to each Link to close the sidebar */}
+          <Link to="/admin-dashboard" onClick={handleLinkClick}>Home</Link>
           <Link to="/admin/residents" onClick={handleLinkClick}>Manage Residents</Link>
-          <Link to="/admin/upload" onClick={handleLinkClick}>Daily Upload</Link>
           <Link to="/admin/analyse" onClick={handleLinkClick}>Analyse Usage</Link>
           <Link to="/admin/high-consumers" onClick={handleLinkClick}>High Consumers</Link>
         </nav>

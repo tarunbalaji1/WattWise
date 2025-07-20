@@ -1,0 +1,54 @@
+.csv-uploader-container {
+  background-color: #f9f9f9;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 24px;
+  margin-top: 20px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+.csv-uploader-container h3 {
+  margin-top: 0;
+  color: #333;
+}
+
+.csv-uploader-container p {
+  color: #666;
+  font-size: 14px;
+}
+
+.btn-select-file,
+.btn-upload {
+  padding: 10px 20px;
+  border-radius: 5px;
+  border: none;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.2s ease;
+}
+
+.btn-select-file {
+  background-color: #007bff;
+  color: white;
+}
+
+.btn-select-file:hover {
+  background-color: #0056b3;
+}
+
+.file-info {
+  margin-top: 15px;
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  font-size: 14px;
+}
+
+.btn-upload {
+  background-color: #28a745;
+  color: white;
+}
+
+.btn-upload:hover {
+  background-color: #218838;
+}
