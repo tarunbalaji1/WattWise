@@ -69,6 +69,7 @@ const dashRoutes     = require('./routes/dashboard');
 const adminDashRoutes = require('./routes/admindashboard'); // NEW: Import the admin dashboard routes
 const adminResRoutes = require('./routes/adminResidents');
 const adminHighCons     = require('./routes/adminHighConsumers');
+const csvUploadRoute = require('./routes/csvUpload');
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -84,6 +85,7 @@ mongoose
     app.use('/api/admin', adminDashRoutes); // NEW: Use the admin dashboard routes
     app.use('/api/admin/residents', adminResRoutes);
     app.use('/api/admin/high-consumers', adminHighCons);
+    app.use('/api/admin', csvUploadRoute);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {

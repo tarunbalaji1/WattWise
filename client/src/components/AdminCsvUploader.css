@@ -1,54 +1,157 @@
 .csv-uploader-container {
-  background-color: #f9f9f9;
-  border: 1px solid #e0e0e0;
-  border-radius: 8px;
-  padding: 24px;
-  margin-top: 20px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    background-color: #fff;
+    border: 1px solid #e3e8ee;
+    border-radius: 12px;
+    padding: 0;
+    margin: 30px auto;
+    max-width: 900px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    overflow: hidden; /* Ensures child elements conform to border radius */
 }
 
-.csv-uploader-container h3 {
-  margin-top: 0;
-  color: #333;
+.card-header {
+    background-color: #f7f9fc;
+    padding: 20px 25px;
+    border-bottom: 1px solid #e3e8ee;
 }
 
-.csv-uploader-container p {
-  color: #666;
-  font-size: 14px;
+.card-header h3 {
+    margin: 0;
+    color: #2c3e50;
+    font-size: 1.25rem;
 }
 
-.btn-select-file,
+.card-header p {
+    margin: 5px 0 0;
+    color: #5a6b7b;
+    font-size: 0.9rem;
+}
+
+.controls-area {
+    padding: 25px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.btn {
+    border: none;
+    padding: 12px 24px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 500;
+    transition: all 0.2s ease-in-out;
+}
+
+.btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.btn-select {
+    background-color: #fff;
+    color: #2c3e50;
+    border: 1px solid #c8d0d8;
+}
+
+.btn-select:hover:not(:disabled) {
+    background-color: #f7f9fc;
+    border-color: #a8b3be;
+}
+
 .btn-upload {
-  padding: 10px 20px;
-  border-radius: 5px;
-  border: none;
-  cursor: pointer;
-  font-weight: bold;
-  transition: background-color 0.2s ease;
+    background-image: linear-gradient(to right, #4e54c8, #8f94fb);
+    color: white;
+    box-shadow: 0 2px 6px rgba(143, 148, 251, 0.4);
 }
 
-.btn-select-file {
-  background-color: #007bff;
-  color: white;
-}
-
-.btn-select-file:hover {
-  background-color: #0056b3;
+.btn-upload:hover:not(:disabled) {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(143, 148, 251, 0.5);
 }
 
 .file-info {
-  margin-top: 15px;
-  display: flex;
-  align-items: center;
-  gap: 20px;
-  font-size: 14px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background-color: #f7f9fc;
+    padding: 10px 15px;
+    border-radius: 8px;
+    border: 1px solid #e3e8ee;
 }
 
-.btn-upload {
-  background-color: #28a745;
-  color: white;
+.file-info span {
+    font-size: 0.9rem;
+    color: #2c3e50;
+    font-weight: 500;
 }
 
-.btn-upload:hover {
-  background-color: #218838;
+.status-container {
+    padding: 0 25px 25px;
+}
+
+.upload-status {
+    padding: 15px;
+    border-radius: 8px;
+    font-weight: 500;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    align-items: center;
+}
+
+.status-success {
+    background-color: #e0f8e9;
+    color: #1d7b43;
+}
+
+.status-error {
+    background-color: #fde2e2;
+    color: #a31616;
+}
+
+.error-table-container {
+    margin-top: 20px;
+    border: 1px solid #e3e8ee;
+    border-radius: 8px;
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.error-table-container table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.error-table-container th, .error-table-container td {
+    padding: 12px 15px;
+    text-align: left;
+    font-size: 0.875rem;
+    border-bottom: 1px solid #e3e8ee;
+}
+
+.error-table-container thead th {
+    background-color: #f7f9fc;
+    color: #5a6b7b;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.error-table-container tbody tr:nth-child(even) {
+    background-color: #fcfdff;
+}
+
+.error-table-container tbody tr:hover {
+    background-color: #f0f4f8;
+}
+
+.error-table-container td:last-child {
+    color: #c0392b;
+    font-weight: 500;
 }

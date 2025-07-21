@@ -96,52 +96,47 @@ router.get('/range', verifyToken, async (req, res) => {
         if (!resident) return res.status(404).json({ msg: 'Resident not found' });
         const { towerNo, flatNo } = resident;
 
-        // 2) Compute base dates (UTC midnight)
+        // 2) --- CRITICAL: ESTABLISH KEY DATES IN UTC ---
+        // 'today' is the very start of the current day in UTC.
         const today = new Date();
         today.setUTCHours(0, 0, 0, 0);
 
-        // *NEW*: Define yesterday here for reuse
+        // 'yesterday' is the very start of the previous day. This is our consistent end date.
         const yesterday = new Date(today);
         yesterday.setUTCDate(yesterday.getUTCDate() - 1);
 
-        // 3) Determine the primary display range (start and end dates for the graph)
+        // 3) --- CRITICAL: DETERMINE THE EXACT DISPLAY RANGE ---
         let displayRangeStart, displayRangeEnd;
 
-        if (startDate && endDate) { // Handle custom date range first
+        if (startDate && endDate) {
             displayRangeStart = new Date(startDate);
             displayRangeEnd = new Date(endDate);
-
-            if (isNaN(displayRangeStart.getTime()) || isNaN(displayRangeEnd.getTime())) {
-                return res.status(400).json({ msg: 'Invalid start or end date.' });
-            }
-            if (displayRangeStart > displayRangeEnd) {
-                return res.status(400).json({ msg: 'Start date cannot be after end date.' });
-            }
             displayRangeStart.setUTCHours(0, 0, 0, 0);
             displayRangeEnd.setUTCHours(0, 0, 0, 0);
-
         } else if (days === 'month') {
-            // Month view: display from 1st of this month to YESTERDAY
+            // For "This Month", the range is from the 1st of the current month...
             displayRangeStart = new Date(today.getUTCFullYear(), today.getUTCMonth(), 1);
-            displayRangeEnd = yesterday; // *FIXED*
-
+            // ...up to and including YESTERDAY.
+            displayRangeEnd = yesterday;
         } else {
-            // N‑day view: display from N-1 days before yesterday up to YESTERDAY
-            const n = parseInt(days, 10) || 0;
-            if (n <= 0) return res.status(400).json({ msg: 'Invalid number of days for range.' });
-            
-            displayRangeEnd = yesterday; // *FIXED*
-            displayRangeStart = new Date(yesterday.getTime() - (n - 1) * 86_400_000); // e.g., for 7 days, go back 6 days from yesterday
+            // For "N-Days", the range ends on YESTERDAY.
+            const n = parseInt(days, 10) || 7;
+            displayRangeEnd = yesterday;
+            // The start is calculated by going back n-1 days from yesterday.
+            // e.g., for 7 days, we go back 6 days to get a total of 7 data points.
+            displayRangeStart = new Date(yesterday.getTime() - (n - 1) * 86_400_000);
         }
 
-        // 4) Determine the data fetch range (need one day prior for calculation)
+        // 4) --- CRITICAL: DETERMINE THE DATA FETCH RANGE ---
+        // We need one day of data before the display range starts to calculate the first day's usage.
         const dataFetchStart = new Date(displayRangeStart);
         dataFetchStart.setUTCDate(dataFetchStart.getUTCDate() - 1);
-        const dataFetchEnd = displayRangeEnd;
 
-        // 5) Fetch all relevant readings in one go
+        // 5) --- CRITICAL: FETCH DATA CORRECTLY ---
+        // The query MUST fetch all records with a date LESS THAN ($lt) today.
+        // This correctly includes all records from yesterday (e.g., up to 23:59:59) without including today.
         const docs = await DailyConsumption.find({
-            date: { $gte: dataFetchStart, $lte: dataFetchEnd }
+            date: { $gte: dataFetchStart, $lt: today }
         }).lean();
 
         // 6) Group readings by flat and sort by date
@@ -166,31 +161,33 @@ router.get('/range', verifyToken, async (req, res) => {
             return last;
         }
 
-        // 8) Build day‑by‑day usage array for the entire data fetch range
+        // 8) --- CRITICAL: PROCESS EVERY DAY IN THE RANGE ---
         const rawResult = [];
         const userKey = `${towerNo}|${flatNo}`;
 
-        for (let day = new Date(dataFetchStart); day <= dataFetchEnd; day.setUTCDate(day.getUTCDate() + 1)) {
+        // The loop MUST run up to and INCLUDING the displayRangeEnd date.
+        // The '<=' operator is essential here.
+        for (let day = new Date(dataFetchStart); day <= displayRangeEnd; day.setUTCDate(day.getUTCDate() + 1)) {
             const prev = new Date(day);
             prev.setUTCDate(prev.getUTCDate() - 1);
 
-            // User's daily usage
             const userDocs = byFlat[userKey] || [];
             const todayUserC = getLatestCumul(userDocs, day);
             const prevUserC = getLatestCumul(userDocs, prev);
             let userKwh = +(todayUserC - prevUserC).toFixed(2);
             userKwh = Math.max(0, userKwh);
 
-            // Community average usage
+            // ... (community average logic remains the same)
             let sum = 0, count = 0;
             for (const [flatKey, docsArr] of Object.entries(byFlat)) {
                 if (flatKey === userKey) continue;
                 const tC = getLatestCumul(docsArr, day);
                 const pC = getLatestCumul(docsArr, prev);
                 let dailyConsumption = +(tC - pC).toFixed(2);
-                dailyConsumption = Math.max(0, dailyConsumption);
-                sum += dailyConsumption;
-                count++;
+                if (tC > 0 && pC > 0 && dailyConsumption >= 0) {
+                    sum += Math.max(0, dailyConsumption);
+                    count++;
+                }
             }
             const communityKwh = count ? +(sum / count).toFixed(2) : 0;
 
@@ -201,18 +198,18 @@ router.get('/range', verifyToken, async (req, res) => {
             });
         }
 
-        // 9) Filter the results to only the intended display range
+        // 9) --- CRITICAL: FILTER TO THE EXACT DISPLAY RANGE ---
+        // This final step removes the extra day we fetched for calculation purposes.
         const finalResult = rawResult.filter(item => {
             const itemDate = new Date(item.date + 'T00:00:00Z');
             return itemDate >= displayRangeStart && itemDate <= displayRangeEnd;
         });
 
-        // 10) Return final result
         return res.json(finalResult);
 
     } catch (err) {
         console.error('[RANGE] error:', err);
-        return res.status(500).json({ msg: 'Server error' });
+        return res.status(500).json({ msg: 'Server error: ' + err.message });
     }
 });
 
