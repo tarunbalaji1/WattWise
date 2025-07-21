@@ -19,9 +19,6 @@ export default function Sidebar() {
           <Link to="/dashboard" onClick={() => setOpen(false)}>Home</Link>
           <Link to="/dashboard/profile" onClick={() => setOpen(false)}>User Profile</Link>
           <Link to="/dashboard/analyse" onClick={() => setOpen(false)}>Analyse</Link>
-          <Link to="/dashboard/analyse-datewise" onClick={() => setOpen(false)}>
-            Analyse Datewise
-          </Link>
           <Link to="/dashboard/chatbot" onClick={() => setOpen(false)}>Chatbot</Link>
           <Link to="/dashboard/predictions" onClick={() => setOpen(false)}>Predictions</Link>
         </nav>
