@@ -4,6 +4,8 @@ const { GoogleGenAI } = require('@google/genai');
 
 const router = express.Router();
 
+//
+
 // Your system pre-prompt (or from .env)
 const SYSTEM_PROMPT = process.env.DOMAIN_CONTEXT
   || 'You are a concise energy-savings assistant for residents, always give clear, actionable tips.';
