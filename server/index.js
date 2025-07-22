@@ -70,6 +70,7 @@ const adminDashRoutes = require('./routes/admindashboard'); // NEW: Import the a
 const adminResRoutes = require('./routes/adminResidents');
 const adminHighCons     = require('./routes/adminHighConsumers');
 const csvUploadRoute = require('./routes/csvUpload');
+const chatbotRoute = require('./routes/chatbot');
 
 mongoose
   .connect(process.env.MONGO_URI)
@@ -86,6 +87,7 @@ mongoose
     app.use('/api/admin/residents', adminResRoutes);
     app.use('/api/admin/high-consumers', adminHighCons);
     app.use('/api/admin', csvUploadRoute);
+    app.use('/api/chat', chatbotRoute);
 
     const PORT = process.env.PORT || 5000;
     app.listen(PORT, () => {
